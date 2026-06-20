@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'delivery/css/styles.css' %}">
+    <title>{{ restaurant.name }} - Menu</title>
+</head>
+<body>
+    <h1 style="color: black;">WELCOME TO MEAL_MATE WIZARDS</h1><br> 
+    <!--<header class="header">
+        <img src="https://tse1.mm.bing.net/th?id=OIP.3WZi6H_32R9jOYWsVelh6wHaHa&pid=Api&P=0&h=180" padding="100px" alt="not found" height="100px" width="100px"/>
+        <h3>WELCOME TO MEAL_MATE WIZARDS</h3></header>-->
+    <nav class="n1">
+        <a href="#">Hi, {{username}}</a>
+        <a href="/"><svg style="color: white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16"> <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z" fill="white"></path> </svg>Home</a>
+        <a href="{% url 'logout' %}" id="logout-button"><svg style="color: white" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" fill="white"></path></svg>Logout</a>
+         <script>
+            document.getElementById('logout-button').addEventListener('click', function(event) {
+                event.preventDefault();
+                fetch('/logout/', {method: 'POST', headers: {
+                    'X-CSRFToken':'{{csrf_token}}'
+                }})
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    window.location.href = '/signin/';
+                });
+            });
+        </script>
+    </nav><br><br>  
+    <h2>Welcome {{username}}</h2>
+
+    <a href="{% url 'show_cart_page' username %}"> <svg xmlns="http://www.w3.org/2000/svg" style="color:blue" width="50" height="50" fill="currentColor" class="bi bi-cart-check-fill" viewBox="0 0 16 16"> <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-1.646-7.646-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708z"/></svg></a>
+
+    <h1>Menu for {{ restaurant.name }}</h1>
+    <h3>Cuisine: {{ restaurant.cuisine }}</h3>
+    <img src="{{ restaurant.picture }}" alt="{{ restaurant.name }}" width="200">
+
+    <h2>Menu Items</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Veg/Non-Veg</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in menu_items %}
+            <tr>
+                <td>
+                    <img src="{{ item.picture }}" alt="{{ item.name }}" width="100">
+                </td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.price }}</td>
+                <td>
+                    {% if item.is_veg %}
+                        Veg
+                    {% else %}
+                        Non-Veg
+                    {% endif %}
+                </td> 
+                <td>
+                    <form method="POST" action="{% url 'add_to_cart' item.id username %}">
+                        {% csrf_token %}
+                        <button type="submit" onclick="return confirm('Are you sure you want to add to cart?')" style="color:blue">Add to cart</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No menu items yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table><br><br>
+    <!--<footer class="footer">
+        <h4>&copy; Thank you for using meal_mate</h4>
+    </footer>-->
+    
+</body>
+</html>
